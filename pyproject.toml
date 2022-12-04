@@ -1,0 +1,44 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "studyxiao", email = "studyxiao@163.com"},
+]
+dependencies = [
+    "pydantic[dotenv]>=1.10.2",
+    "black>=22.10.0",
+    "flask>=2.2.2",
+    "gunicorn>=20.1.0",
+    "gevent>=22.10.2",
+]
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+[tool.pdm]
+[tool.pdm.dev-dependencies]
+dev = [
+    "ruff>=0.0.152",
+]
+
+[tool.black]
+line-length = 120
+extend-exclude = """
+^/__pycache__
+^/__pypackages__
+.venv
+.ruff_cache
+"""
+
+[tool.ruff]
+line-length = 120
+exclude = [".ruff_cache", ".venv"]
+
+[tool.pdm.scripts]
+_.env_file = ".env"
+format = "black ."
+check = "ruff ."
+dev = "flask --env-file .env.dev --debug run"
+
+docker = "docker compose --env-file .env.dev up --build"
+prod = "docker compose --env-file .env.prod -f compose.prod.yaml up --build -d"

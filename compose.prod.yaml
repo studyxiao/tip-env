@@ -1,0 +1,42 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./deploy/web/Dockerfile.prod
+      args:
+        - "GID=${GID}"
+        - "UID=${UID}"
+        - "http_proxy=${HTTP_PROXY}"
+        - "https_proxy=${HTTP_PROXY}"
+    env_file:
+      - '.env'
+      # - '.env.prod'
+    ports:
+      - "0.0.0.0:${WEB_PORT}:${FLASK_RUN_PORT}"
+    networks:
+      - backend
+    volumes:
+      - ./log/:/app/log/
+
+  db:
+    image: mysql:8.0.31
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_NAME}
+    expose:
+      - ${MYSQL_PORT:-3306}
+    networks:
+      - backend
+    volumes:
+      - ./deploy/mysql/:/etc/mysql/conf.d
+      - mysql-data:/var/lib/mysql
+
+networks:
+  backend:
+
+
+volumes:
+  mysql-data:

@@ -1,0 +1,35 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./deploy/web/Dockerfile
+    env_file:
+      - '.env'
+      - '.env.dev'
+    ports:
+      - "0.0.0.0:${WEB_PORT}:${FLASK_RUN_PORT}"
+    networks:
+      - backend
+
+  db:
+    image: mysql:8.0.31
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_NAME}
+    ports:
+      - ${MYSQL_PORT}:3306
+    networks:
+      - backend
+    volumes:
+      - ./deploy/mysql/:/etc/mysql/conf.d
+      - mysql-data:/var/lib/mysql
+
+networks:
+  backend:
+
+
+volumes:
+  mysql-data:
